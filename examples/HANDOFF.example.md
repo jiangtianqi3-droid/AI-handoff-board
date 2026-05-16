@@ -9,7 +9,8 @@ This file keeps one active record and up to four finalized records.
 - Move the Active Record to Finalized Records when stopping or handing off.
 - Keep only the latest four Finalized Records.
 - Delete older Finalized Records from this file.
-- Do not store secrets, tokens, passwords, credentials, private URLs, or sensitive personal data.
+- Do not store secrets, tokens, passwords, credentials, private URLs, or
+  sensitive personal data.
 
 ---
 

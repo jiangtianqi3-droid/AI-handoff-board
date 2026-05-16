@@ -1,6 +1,9 @@
 ---
 name: ai-handoff
-description: Use at the start, continuation, interruption, or completion of coding work in a repository to read and update .ai-handoff/HANDOFF.md. This skill maintains a bounded handoff board for Codex, Claude Code, and other AI coding agents.
+description: >-
+  Use at the start, continuation, interruption, or completion of coding work in
+  a repository to read and update .ai-handoff/HANDOFF.md. This skill maintains
+  a bounded handoff board for Codex, Claude Code, and other AI coding agents.
 ---
 
 # AI Handoff Skill
@@ -118,7 +121,8 @@ This file keeps one active record and up to four finalized records.
 - Move the Active Record to Finalized Records when stopping or handing off.
 - Keep only the latest four Finalized Records.
 - Delete older Finalized Records from this file.
-- Do not store secrets, tokens, passwords, credentials, private URLs, or sensitive personal data.
+- Do not store secrets, tokens, passwords, credentials, private URLs, or
+  sensitive personal data.
 
 ---
 
