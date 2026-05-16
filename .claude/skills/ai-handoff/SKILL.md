@@ -7,43 +7,58 @@ description: Use at the start, continuation, interruption, or completion of codi
 
 ## Purpose
 
-Use this skill to preserve concise, actionable project state across AI coding agents and sessions. The handoff file is `.ai-handoff/HANDOFF.md`.
+Use this skill to preserve concise, actionable project state across AI coding
+agents and sessions.
 
-The file is a bounded handoff board, not an append-only log. It keeps one Active Record and up to four Finalized Records.
+The handoff file is:
+
+```text
+.ai-handoff/HANDOFF.md
+```
+
+This file is a bounded handoff board.
+
+It is not an append-only log.
+
+It keeps one Active Record and up to four Finalized Records.
 
 ## Startup Procedure
 
-1. Read `.ai-handoff/HANDOFF.md` before editing code.
-2. If `.ai-handoff/HANDOFF.md` does not exist, create it from `templates/HANDOFF_TEMPLATE.md`.
-3. Review the Active Record and latest Finalized Records.
-4. Continue from the recorded next step when it is relevant.
-5. Do not ask the user to repeat context that is already present in the handoff file.
-6. If there is no active work, create or refresh the Active Record for the current task.
+1. Before editing, read `.ai-handoff/HANDOFF.md`.
+2. If `.ai-handoff/HANDOFF.md` is missing, create it from
+   `templates/HANDOFF_TEMPLATE.md`.
+3. Review the Active Record.
+4. Review the latest Finalized Records.
+5. Continue from the recorded next step when it is relevant.
+6. Do not ask the user to repeat context already present in `HANDOFF.md`.
+7. If there is no active work, create or refresh the Active Record for the
+   current task.
 
 ## Working Procedure
 
 Maintain exactly one Active Record while working.
 
-Update the Active Record after meaningful changes, decisions, test runs, or newly discovered risks. Keep it concise and current. Do not add fragmented micro-log entries.
+Update only the Active Record during work.
 
-Use concrete descriptions:
+Update it after meaningful changes, decisions, test runs, failures, or newly
+discovered risks.
 
-- name the files changed
-- describe the behavior changed
-- include commands or tests run
-- include test results
-- record unresolved risks
-- leave a clear next step if interrupted
+Do not create noisy micro-logs.
+
+Keep the Active Record concise, current, and specific.
 
 ## Stop / Handoff Procedure
 
-Before stopping, completing work, handing off, or when interruption is likely:
+On completion, interruption, quota exhaustion, or handoff:
 
-1. Update the Active Record with the latest files, changes, commands, results, risks, and next step.
-2. Move the Active Record into the top of `Finalized Records`.
-3. Mark the record as completed, interrupted, or handed off.
-4. Reset the Active Record to `Status: none`.
-5. Prune Finalized Records so only the latest four remain.
+1. Update the Active Record with the latest task state.
+2. Include changed files, concrete changes, commands, tests, results, risks,
+   and the next step if interrupted.
+3. Move the Active Record into the top of Finalized Records.
+4. Mark the finalized record as completed, interrupted, or handed off.
+5. Reset the Active Record to `Status: none`.
+6. Keep only the latest four Finalized Records.
+7. Delete older Finalized Records when the limit is exceeded.
 
 ## Retention Policy
 
@@ -53,26 +68,29 @@ Before stopping, completing work, handing off, or when interruption is likely:
 - up to four Finalized Records
 - max five records total
 
-Delete the oldest Finalized Records when the limit is exceeded.
+The Active Record is the only record updated during work.
 
-## Required Fields
+Finalized Records are the latest completed, interrupted, or handed-off states.
 
-Each Active Record and Finalized Record should include:
+## Required Record Fields
+
+Each Active Record and Finalized Record must include:
 
 - status
 - agent
 - started at
 - last updated
 - current task
-- current changes
 - files touched
+- specific changes made
 - commands or tests run
+- test results
 - current problems or risks
 - next step if interrupted
 
 ## Security Rules
 
-Never store sensitive information in the handoff file.
+Never write secrets or private data into `HANDOFF.md`.
 
 Do not write:
 
@@ -82,9 +100,9 @@ Do not write:
 - credentials
 - private URLs
 - sensitive personal data
-- private business data or proprietary text
+- proprietary business data
 
-If command output includes sensitive data, summarize only the safe result.
+If command output contains sensitive content, summarize only the safe result.
 
 ## HANDOFF.md Template
 
@@ -149,4 +167,6 @@ None
 ## Finalized Records
 
 None.
+
+---
 ```
