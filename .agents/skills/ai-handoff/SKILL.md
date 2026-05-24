@@ -10,74 +10,49 @@ description: >-
 
 ## Purpose
 
-Use this skill to preserve concise, actionable project state across AI coding
-agents and sessions.
+Maintain `.ai-handoff/HANDOFF.md` as a bounded handoff board:
 
-The handoff file is:
-
-```text
-.ai-handoff/HANDOFF.md
-```
-
-This file is a bounded handoff board.
-
-It is not an append-only log.
-
-It keeps one Active Record and up to four Finalized Records.
+- one Active Record
+- up to four Finalized Records
+- no append-only logs
 
 ## Startup Procedure
 
-1. Before editing, read `.ai-handoff/HANDOFF.md`.
-2. If `.ai-handoff/HANDOFF.md` is missing, create it from
-   `templates/HANDOFF_TEMPLATE.md`.
-3. Review the Active Record.
-4. Review the latest Finalized Records.
-5. Continue from the recorded next step when it is relevant.
-6. Do not ask the user to repeat context already present in `HANDOFF.md`.
-7. If there is no active work, create or refresh the Active Record for the
-   current task.
+1. Read `.ai-handoff/HANDOFF.md` before editing.
+2. If missing, create it from `templates/HANDOFF_TEMPLATE.md`.
+3. Continue from the Active Record when present.
+4. If no Active Record exists, create one for the current task.
+5. Do not ask for context already present in `HANDOFF.md`.
 
 ## Working Procedure
 
-Maintain exactly one Active Record while working.
-
-Update only the Active Record during work.
-
-Update it after meaningful changes, decisions, test runs, failures, or newly
-discovered risks.
-
-Do not create noisy micro-logs.
-
-Keep the Active Record concise, current, and specific.
+- Maintain exactly one Active Record.
+- Update only the Active Record during work.
+- Replace stale details instead of adding micro-logs.
+- Record meaningful changes, decisions, test runs, failures, and risks.
+- Keep entries concrete enough for the next agent to continue.
 
 ## Stop / Handoff Procedure
 
 On completion, interruption, quota exhaustion, or handoff:
 
-1. Update the Active Record with the latest task state.
-2. Include changed files, concrete changes, commands, tests, results, risks,
-   and the next step if interrupted.
-3. Move the Active Record into the top of Finalized Records.
-4. Mark the finalized record as completed, interrupted, or handed off.
-5. Reset the Active Record to `Status: none`.
+1. Update the Active Record with the latest state.
+2. Include files, changes, commands, results, risks, and next step.
+3. Move it to the top of Finalized Records.
+4. Mark it completed, interrupted, or handed off.
+5. Reset Active Record to `Status: none`.
 6. Keep only the latest four Finalized Records.
-7. Delete older Finalized Records when the limit is exceeded.
+7. Delete older Finalized Records.
 
 ## Retention Policy
 
-`HANDOFF.md` must contain:
+Maximum contents:
 
 - one Active Record
-- up to four Finalized Records
-- max five records total
-
-The Active Record is the only record updated during work.
-
-Finalized Records are the latest completed, interrupted, or handed-off states.
+- four Finalized Records
+- five records total
 
 ## Required Record Fields
-
-Each Active Record and Finalized Record must include:
 
 - status
 - agent
@@ -95,82 +70,11 @@ Each Active Record and Finalized Record must include:
 
 Never write secrets or private data into `HANDOFF.md`.
 
-Do not write:
-
-- API keys
-- tokens
-- passwords
-- credentials
-- private URLs
-- sensitive personal data
-- proprietary business data
-
-If command output contains sensitive content, summarize only the safe result.
+Do not write API keys, tokens, passwords, credentials, private URLs, sensitive
+personal data, or proprietary business data.
 
 ## HANDOFF.md Template
 
-```markdown
-# AI Handoff Board
+Use `templates/HANDOFF_TEMPLATE.md` as the canonical template.
 
-This file keeps one active record and up to four finalized records.
-
-## Rules
-
-- Read this file before editing code.
-- Maintain only one Active Record while working.
-- Move the Active Record to Finalized Records when stopping or handing off.
-- Keep only the latest four Finalized Records.
-- Delete older Finalized Records from this file.
-- Do not store secrets, tokens, passwords, credentials, private URLs, or
-  sensitive personal data.
-
----
-
-## Active Record
-
-Status: none
-
-### Agent
-
-None
-
-### Started At
-
-None
-
-### Last Updated
-
-None
-
-### Current Task
-
-None
-
-### Current Changes
-
-None
-
-### Files Touched
-
-None
-
-### Commands / Tests Run
-
-None
-
-### Current Problems / Risks
-
-None
-
-### Next Step If Interrupted
-
-None
-
----
-
-## Finalized Records
-
-None.
-
----
-```
+Do not inline the full template unless both handoff files are missing.
