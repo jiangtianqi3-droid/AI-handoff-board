@@ -1,369 +1,226 @@
 # Agent Handoff Board
 
-A bounded handoff board for AI coding agents, keeping only the current working
-note and the latest four transition records.
+A lightweight Markdown protocol for AI coding agents to preserve repository
+context across sessions, quota limits, interrupted workflows, and multiple
+devices.
 
-一个有容量上限的 AI 编码助手交接白板，只保留当前工作记录和最近四条交接记录，
-避免 Codex、Claude Code 等工具切换时丢失上下文。
+一个轻量级、基于 Markdown 的 AI 编码助手交接协议，用仓库内文件保存上下文，
+让 Codex、Claude Code 和其他 AI 编码 Agent 在切换 session、额度耗尽、设备切换
+或中断后继续工作。
+
+## Core Idea
+
+This project separates stable project intent from short-term agent handoff.
+
+`PROJECT_BRIEF.md` explains where the project is going.
+`HANDOFF.md` explains what the last agent just changed.
+
+本项目将长期项目意图和短期 AI 交接记录分离。
+
+`PROJECT_BRIEF.md` 说明项目往哪里走。
+`HANDOFF.md` 说明上一位 AI 刚刚改了什么。
+
+## Why This Exists
+
+AI coding agents are useful, but their context is fragile. When a user switches
+from Codex to Claude Code, starts a new session, hits a quota limit, or edits
+from another computer, the next agent can lose the current goal and the latest
+work state.
+
+Agent Handoff Board keeps that context in the repository instead of relying on
+conversation history.
+
+## Startup Chain
+
+This project does not rely on skills alone for startup automation.
+
+`AGENTS.md` and `CLAUDE.md` are the startup bootstraps.
+`SKILL.md` defines the detailed workflow.
+`PROJECT_BRIEF.md` stores stable project intent.
+`HANDOFF.md` stores bounded short-term handoff state.
+
+本项目不只依赖 Skill 自动触发。
+真正的启动入口是 `AGENTS.md` 和 `CLAUDE.md`。
+Skill 负责详细流程。
+`PROJECT_BRIEF.md` 保存长期稳定的项目意图。
+`HANDOFF.md` 保存有上限的短期交接状态。
+
+The intended startup flow is:
+
+```text
+AI starts in repository
+↓
+Read AGENTS.md / CLAUDE.md
+↓
+Read .ai-handoff/PROJECT_BRIEF.md
+↓
+Read .ai-handoff/HANDOFF.md
+↓
+If HANDOFF.md contains another agent's unfinalized Active Record:
+    finalize it as interrupted / inherited
+↓
+Create current agent's Active Record
+↓
+Start work
+↓
+Update HANDOFF.md after meaningful changes
+↓
+Finalize Active Record before stopping, handoff, quota exhaustion, or interruption
+```
 
 ## Quick Install
 
-Copy these files into your repository:
+Copy these files into a repository:
 
 ```text
 AGENTS.md
 CLAUDE.md
+.ai-handoff/PROJECT_BRIEF.md
 .ai-handoff/HANDOFF.md
 .agents/skills/ai-handoff/SKILL.md
 .claude/skills/ai-handoff/SKILL.md
+templates/PROJECT_BRIEF_TEMPLATE.md
 templates/HANDOFF_TEMPLATE.md
 ```
 
-Then tell your AI coding agent:
+Then tell the AI coding agent:
 
 ```text
-Before editing, read .ai-handoff/HANDOFF.md.
+Before editing, read .ai-handoff/PROJECT_BRIEF.md.
+Then read .ai-handoff/HANDOFF.md.
 Maintain the Active Record while working.
 Finalize the Active Record before stopping or handing off.
 ```
 
-## 中文版
+## Files
 
-Agent Handoff Board 是一个轻量级、基于 Markdown 的 AI 编码助手交接协议。
+- `AGENTS.md`: startup instructions for Codex and other agents that read
+  repository agent files.
+- `CLAUDE.md`: Claude Code startup file. Its first line imports `AGENTS.md`.
+- `.agents/skills/ai-handoff/SKILL.md`: Codex skill workflow.
+- `.claude/skills/ai-handoff/SKILL.md`: Claude Code skill workflow.
+- `.ai-handoff/PROJECT_BRIEF.md`: stable project intent for AI agents.
+- `.ai-handoff/HANDOFF.md`: bounded short-term handoff board.
+- `templates/PROJECT_BRIEF_TEMPLATE.md`: canonical project brief template.
+- `templates/HANDOFF_TEMPLATE.md`: canonical handoff template.
+- `examples/PROJECT_BRIEF.example.md`: realistic project brief example.
+- `examples/HANDOFF.example.md`: handoff example with interrupted takeover.
 
-它适合放进任何代码仓库，让 Codex、Claude Code 和其他 AI 编码 Agent
-在轮流接手项目时，可以先读取同一个交接文件，再继续工作。
+## PROJECT_BRIEF.md
 
-核心文件是：
+`PROJECT_BRIEF.md` is for long-term project context. It explains why the
+project exists, where it is going, who it is for, and what boundaries matter.
 
-```text
-.ai-handoff/HANDOFF.md
-```
+It is not a README, not a changelog, not a file map, and not a task list.
 
-这个文件不是无限增长的日志，而是一个有容量上限的交接白板。
+Only update `PROJECT_BRIEF.md` when the project's long-term purpose, design
+direction, target users, or major constraints change.
 
-### 为什么需要它
+Do not update it for:
 
-使用 AI 编码助手时，经常会遇到这些情况：
+- normal bug fixes
+- small refactors
+- dependency updates
+- README edits
+- template edits
+- example edits
+- ordinary feature work
+- one-off experiments
 
-- Codex 当前 session 或额度用完，需要切到 Claude Code。
-- Claude Code 工作到一半中断，需要切回 Codex。
-- 新开一个 AI session 后，之前的上下文不在了。
-- 用户不得不反复解释刚才改了什么、测试跑了哪些、现在卡在哪里。
+If uncertain, update `HANDOFF.md` instead.
 
-Agent Handoff Board 的目标是把关键上下文保存在仓库内。
+## HANDOFF.md
 
-下一个 AI Agent 可以直接读取 `.ai-handoff/HANDOFF.md` 并继续工作，
-而不是让用户重新讲一遍。
+`HANDOFF.md` is for short-term transition state. It records what the current AI
+is doing, what changed, which files were touched, which commands or tests ran,
+what risks remain, and where the next agent should continue if interrupted.
 
-### 核心思路
+It is a bounded sliding window:
 
-- `AGENTS.md` 是 Codex 等 Agent 的启动入口。
-- `CLAUDE.md` 是 Claude Code 的启动入口。
-- `.agents/skills/ai-handoff/SKILL.md` 是 Codex Skill 工作流。
-- `.claude/skills/ai-handoff/SKILL.md` 是 Claude Code Skill 工作流。
-- `.ai-handoff/HANDOFF.md` 是真正的交接白板。
-- `HANDOFF.md` 是 bounded sliding window，不是无限日志。
+- 1 Active Record
+- up to 4 Finalized Records
+- max 5 records total
 
-### 保留策略
+During work, update only the current Active Record. Do not append fragmented
+micro-logs.
 
-`HANDOFF.md` 必须始终保持有界：
+Before stopping, handoff, quota exhaustion, or interruption, convert the Active
+Record into the newest Finalized Record and reset the Active Record to
+`Status: none`.
 
-- 1 条 Active Record：当前 AI 正在维护的工作记录
-- 最多 4 条 Finalized Records：最近四次完成、中断或交接记录
-- 总计最多 5 条记录
+## Status Values
 
-工作过程中，AI 只更新 Active Record。
-
-不要追加碎片化 micro-log。
-
-停止、完成、额度耗尽、被打断或需要交接时，
-把 Active Record 转成 Finalized Record。
-
-Finalized Records 超过 4 条时，删除最旧记录。
-
-### 安装方式
-
-#### 用于 Codex
-
-把这些文件复制到目标项目根目录：
-
-```text
-AGENTS.md
-.ai-handoff/HANDOFF.md
-.agents/skills/ai-handoff/SKILL.md
-templates/HANDOFF_TEMPLATE.md
-```
-
-支持 `AGENTS.md` 的环境会让 Codex 在开始工作前读取其中的规则。
-
-`AGENTS.md` 要求 Codex 在任何编码或文档修改前，
-必须先读取 `.ai-handoff/HANDOFF.md`。
-
-#### 用于 Claude Code
-
-把这些文件复制到目标项目根目录：
+`HANDOFF.md` supports these statuses:
 
 ```text
-CLAUDE.md
-AGENTS.md
-.ai-handoff/HANDOFF.md
-.claude/skills/ai-handoff/SKILL.md
-templates/HANDOFF_TEMPLATE.md
+none | active | interrupted | inherited | completed | blocked
 ```
 
-Claude Code 会读取 `CLAUDE.md`。
+- `none`: no active record exists.
+- `active`: the current agent is working.
+- `interrupted`: the previous agent's work stopped before normal finalization.
+- `inherited`: the current agent took over another agent's unfinished work.
+- `completed`: the task finished normally.
+- `blocked`: the task cannot continue without outside input or a state change.
 
-本项目中的 `CLAUDE.md` 第一行导入 `AGENTS.md`，
-然后补充 Claude Code 专用规则。
+## Active Record Takeover
 
-#### 最小安装
+If an Active Record exists from another agent, treat it as interrupted work.
 
-如果只想给任意 AI 编码助手使用，可以至少复制：
+Do not overwrite it immediately.
 
-```text
-.ai-handoff/HANDOFF.md
-templates/HANDOFF_TEMPLATE.md
-```
+First preserve it by converting it into a Finalized Record with
+`Status: interrupted` or `Status: inherited`.
 
-然后要求 AI：
+Then create a new Active Record for the current agent.
 
-- 开始编辑前必须读取 `.ai-handoff/HANDOFF.md`。
-- 工作中只维护 Active Record。
-- 停止前 finalize 当前记录。
-- Finalized Records 最多保留 4 条。
+中文含义：如果当前 AI 接手时发现 Active Record 是另一个 Agent 留下的，说明上一
+个 Agent 可能因为额度、session 中断、设备切换等原因没有完成交接。当前 AI 不得
+直接覆盖该 Active Record。必须先把它转成 Finalized Record，状态标记为
+`interrupted` 或 `inherited`，然后再创建当前 AI 自己的 Active Record。
 
-### 文件格式
+## Multi-Device Git Sync Rule
 
-`HANDOFF.md` 的基本结构如下：
+This repository may be edited from multiple computers.
 
-```markdown
-# AI Handoff Board
+Before making changes:
 
-## Active Record
+1. Check the current branch.
+2. Check `git status --short`.
+3. If a remote is configured, fetch or pull the latest changes before editing
+   when safe.
+4. Read `.ai-handoff/PROJECT_BRIEF.md`.
+5. Read `.ai-handoff/HANDOFF.md`.
 
-Status: active | none
+Do not assume the local checkout is up to date.
 
-### Agent
+If local uncommitted changes exist, do not blindly pull.
 
-Codex | Claude Code | Other
+After meaningful changes:
 
-### Started At
+1. Update `.ai-handoff/HANDOFF.md`.
+2. Commit changes when appropriate.
+3. Push changes when the remote is available and credentials are already
+   configured.
+4. Never ask for, print, or store credentials.
 
-YYYY-MM-DD HH:mm TZ
+## Why Not Only Skills
 
-### Last Updated
+Skills are useful, but startup behavior can vary by tool, installation, and
+session. This project keeps the startup rule in repository files first:
 
-YYYY-MM-DD HH:mm TZ
+- `AGENTS.md` tells Codex and compatible agents what to read.
+- `CLAUDE.md` imports `AGENTS.md` as its first line for Claude Code.
+- `SKILL.md` gives the detailed handoff workflow when the skill is available.
+- `PROJECT_BRIEF.md` gives stable direction.
+- `HANDOFF.md` gives the latest bounded transition state.
 
-### Current Task
+This makes the protocol usable even when a skill is missing or not triggered.
 
-当前正在处理的具体任务。
+## Security
 
-### Current Changes
-
-目前已经做出的具体改变。
-
-### Files Touched
-
-- path/to/file
-
-### Commands / Tests Run
-
-- command: result
-
-### Current Problems / Risks
-
-当前风险、失败测试、阻塞点或不确定事项。
-
-### Next Step If Interrupted
-
-如果当前 AI 被打断，下一个 AI 应该从哪里继续。
-
----
-
-## Finalized Records
-
-### YYYY-MM-DD HH:mm TZ - Agent - completed
-
-...
-```
-
-### 简短示例
-
-```markdown
-## Active Record
-
-Status: active
-
-### Agent
-
-Claude Code
-
-### Current Task
-
-继续修复 Codex 交接下来的 reranker 分数归一化问题。
-
-### Current Changes
-
-调整了 `src/reranker.py` 中相同分数的排序逻辑，
-并在 `tests/test_reranker.py` 中增加回归断言。
-
-### Commands / Tests Run
-
-- `pytest tests/test_reranker.py`: 仍有一个稳定排序测试失败
-
-### Current Problems / Risks
-
-排序逻辑可能需要保留原始输入顺序作为最后的 tie-breaker。
-
-### Next Step If Interrupted
-
-检查 `src/reranker.py` 的 sort key，把原始 index 加入相同分数排序逻辑。
-```
-
-更完整的示例见 [examples/HANDOFF.example.md](examples/HANDOFF.example.md)。
-
-### 安全规则
-
-不要把敏感信息写入 `HANDOFF.md`、模板、示例或 Agent 指令文件。
-
-禁止写入：
-
-- API key
-- token
-- password
-- credentials
-- private URL
-- 敏感个人数据
-- 商业私有数据正文
-
-如果命令输出里包含敏感内容，只记录安全总结，不要复制原文。
-
-### 在 GitHub 项目中使用
-
-这个仓库可以作为模板使用。
-
-你可以把这些文件复制到任何项目中：
-
-```text
-AGENTS.md
-CLAUDE.md
-.ai-handoff/HANDOFF.md
-.agents/skills/ai-handoff/SKILL.md
-.claude/skills/ai-handoff/SKILL.md
-templates/HANDOFF_TEMPLATE.md
-```
-
-这样，无论 Codex、Claude Code 还是其他 AI 编码助手接手，
-都可以通过同一个 `.ai-handoff/HANDOFF.md` 了解当前项目状态。
-
-### 未来可选脚本
-
-第一版故意保持轻量。
-
-它不引入 npm、Python 包、数据库或复杂框架。
-
-未来可以增加可选脚本：
-
-- `handoff-init`
-- `handoff-finalize`
-- `handoff-prune`
-- `handoff-status`
-
-这些脚本应该辅助协议，而不是替代可读的 Markdown 交接文件。
-
-## English Version
-
-### Why This Exists
-
-AI coding agents are useful, but their context is fragile.
-
-When you switch tools, start a new session, hit a usage limit, or hand work
-from Codex to Claude Code and back again, the next agent often does not know
-what just changed, which tests were run, or where the work stopped.
-
-Agent Handoff Board solves that with a small repository-local file:
-
-```text
-.ai-handoff/HANDOFF.md
-```
-
-Each agent reads this file before editing code, keeps it updated while working,
-and finalizes the current record before stopping.
-
-The next agent can then continue without asking the user to repeat context
-that is already in the repository.
-
-### Core Idea
-
-- `AGENTS.md` and `CLAUDE.md` are startup entry points for coding agents.
-- Skill files contain the detailed workflow.
-- `.ai-handoff/HANDOFF.md` is the handoff board.
-- `HANDOFF.md` is not an infinite log.
-- `HANDOFF.md` is a bounded sliding window.
-
-### Retention Policy
-
-`HANDOFF.md` must contain:
-
-- one Active Record
-- up to four Finalized Records
-- max five records total
-
-The Active Record is the only record updated during a working session.
-
-When work completes, is interrupted, hits quota exhaustion, or needs to be
-handed off, the Active Record is converted into a Finalized Record.
-
-If there are more than four Finalized Records, delete the oldest records.
-
-### Installation
-
-Use the Quick Install section above for the recommended setup.
-
-For Codex, include:
-
-```text
-AGENTS.md
-.ai-handoff/HANDOFF.md
-.agents/skills/ai-handoff/SKILL.md
-templates/HANDOFF_TEMPLATE.md
-```
-
-For Claude Code, include:
-
-```text
-CLAUDE.md
-AGENTS.md
-.ai-handoff/HANDOFF.md
-.claude/skills/ai-handoff/SKILL.md
-templates/HANDOFF_TEMPLATE.md
-```
-
-### File Format
-
-`HANDOFF.md` tracks one current working record and up to four finalized
-transition records.
-
-Each record should include:
-
-- status
-- agent
-- started at
-- last updated
-- current task
-- files touched
-- specific changes made
-- commands or tests run
-- test results
-- current problems or risks
-- next step if interrupted
-
-### Security
-
-Never write sensitive information into `HANDOFF.md`, examples, templates,
-or agent instructions.
+Never write sensitive information into `PROJECT_BRIEF.md`, `HANDOFF.md`,
+examples, templates, skills, or startup instruction files.
 
 Do not store:
 
@@ -378,22 +235,26 @@ Do not store:
 If command output contains secrets or private data, summarize only the safe
 result instead of copying the output.
 
-### GitHub Usage
+## Future Optional Features
 
-This repository is meant to be copied into other projects.
+The first version intentionally stays Markdown-based and dependency-free.
 
-Use all files as-is, or copy only the files relevant to your agent setup.
-
-### Future Optional Scripts
-
-This first version intentionally stays Markdown-based and dependency-free.
-
-Future versions could add optional helper scripts:
+Future optional helpers could include:
 
 - `handoff-init`
 - `handoff-finalize`
 - `handoff-prune`
 - `handoff-status`
 
-Those scripts should support the protocol, not replace the human-readable
-handoff file.
+Local machine notes can be reserved under:
+
+```text
+.ai-handoff/local/DEVICE_NOTES.md
+```
+
+That file can record local OS, available tools, missing tools, or local path
+issues. `.ai-handoff/local/` is ignored so device-specific notes do not enter
+Git.
+
+Optional scripts should support the protocol, not replace the human-readable
+Markdown files.
