@@ -1,6 +1,6 @@
 ---
 name: ai-handoff
-description: Use at the start, continuation, interruption, or completion of coding work in a repository to read and update .ai-handoff/HANDOFF.md and .ai-handoff/PROJECT_BRIEF.md. This skill maintains a bounded handoff board and stable project brief for Codex, Claude Code, and other AI coding agents.
+description: Use at the start, continuation, interruption, or completion of coding work in a repository to read and update .ai-handoff/PROJECT_BRIEF.md and .ai-handoff/HANDOFF.md. This skill maintains stable project intent and bounded handoff state for Codex, Claude Code, and other AI coding agents.
 ---
 
 # AI Handoff Skill
@@ -18,27 +18,29 @@ depending on conversation history.
 
 ## Startup Procedure
 
-1. Check the current branch.
-2. Check `git status --short`.
-3. If a remote is configured, fetch or pull the latest changes before editing
-   when safe.
-4. Read `.ai-handoff/PROJECT_BRIEF.md`.
-5. If missing, create it from `templates/PROJECT_BRIEF_TEMPLATE.md`.
-6. Read `.ai-handoff/HANDOFF.md`.
-7. If missing, create it from `templates/HANDOFF_TEMPLATE.md`.
-8. If another agent's Active Record exists, follow the Active Record Takeover
-   Procedure before creating the current agent's Active Record.
-9. Do not ask for context already present in `PROJECT_BRIEF.md` or
+1. Read `.ai-handoff/PROJECT_BRIEF.md`.
+2. Read `.ai-handoff/HANDOFF.md`.
+3. If `.ai-handoff/PROJECT_BRIEF.md` is missing, create it from
+   `templates/PROJECT_BRIEF_TEMPLATE.md`.
+4. If `.ai-handoff/HANDOFF.md` is missing, create it from
+   `templates/HANDOFF_TEMPLATE.md`.
+5. If another agent's Active Record exists, finalize it as `interrupted` or
+   `inherited`.
+6. Create a new Active Record for the current agent.
+7. Do not ask for context already present in `PROJECT_BRIEF.md` or
    `HANDOFF.md`.
 
-Do not assume the local checkout is up to date. If local uncommitted changes
-exist, do not blindly pull.
+For multi-device work, also check the current branch, check
+`git status --short`, and fetch or pull the latest remote changes before
+editing when safe. Do not assume the local checkout is up to date. If local
+uncommitted changes exist, do not blindly pull.
 
 ## Working Procedure
 
 - Maintain exactly one Active Record.
 - Update only the current Active Record during work.
 - Replace stale details instead of adding micro-logs.
+- Do not create noisy micro-logs.
 - Record meaningful changes, touched files, commands, tests, failures, risks,
   and the next step.
 - Keep entries concrete enough for the next agent to continue.
@@ -48,15 +50,14 @@ exist, do not blindly pull.
 
 On completion, interruption, quota exhaustion, or handoff:
 
-1. Update the Active Record with the latest state.
-2. Include files, changes, commands, results, risks, and next step.
-3. Move it to the top of Finalized Records.
-4. Mark it `completed`, `interrupted`, `inherited`, or `blocked`.
-5. Reset Active Record to `Status: none`.
-6. Keep only the latest four Finalized Records.
-7. Delete older Finalized Records.
-8. Commit changes when appropriate.
-9. Push changes when the remote is available and credentials are already
+1. Convert the current Active Record into a Finalized Record.
+2. Put it at the top of Finalized Records.
+3. Mark it `completed`, `interrupted`, `inherited`, or `blocked`.
+4. Reset Active Record to `Status: none`.
+5. Keep only the latest four Finalized Records.
+6. Delete older Finalized Records.
+7. Commit changes when appropriate.
+8. Push changes when the remote is available and credentials are already
    configured.
 
 Never ask for, print, or store credentials.

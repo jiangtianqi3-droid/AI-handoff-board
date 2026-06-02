@@ -5,7 +5,7 @@ This repository uses two AI-readable context files:
 1. `.ai-handoff/PROJECT_BRIEF.md` for stable project intent.
 2. `.ai-handoff/HANDOFF.md` for short-term agent handoff state.
 
-Before editing code or documentation, first read:
+Before doing any work in this repository, you must read:
 
 1. `.ai-handoff/PROJECT_BRIEF.md`
 2. `.ai-handoff/HANDOFF.md`
@@ -25,7 +25,7 @@ If `.ai-handoff/HANDOFF.md` does not exist, create it from
    as interrupted work.
 5. Do not overwrite another agent's Active Record immediately.
 6. First preserve it by converting it into a Finalized Record with
-   `Status: interrupted` or `Status: inherited`.
+   status: `interrupted` or `inherited`.
 7. Create a new Active Record for the current agent.
 8. Start work.
 

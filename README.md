@@ -92,6 +92,8 @@ Maintain the Active Record while working.
 Finalize the Active Record before stopping or handing off.
 ```
 
+Then start Codex or Claude Code from the repository root.
+
 ## Files
 
 - `AGENTS.md`: startup instructions for Codex and other agents that read

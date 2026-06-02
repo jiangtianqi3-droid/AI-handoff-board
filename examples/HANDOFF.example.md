@@ -8,6 +8,7 @@ This file keeps one active record and up to four finalized records.
 ## Rules
 
 - Read `.ai-handoff/PROJECT_BRIEF.md` before reading this file.
+- Read `.ai-handoff/HANDOFF.md` after the project brief.
 - Maintain only one Active Record while working.
 - If another agent's Active Record exists, preserve it as interrupted or
   inherited before creating the current agent's Active Record.
@@ -21,6 +22,27 @@ This file keeps one active record and up to four finalized records.
 ### Status
 
 none | active | interrupted | inherited | completed | blocked
+
+## Takeover Scenario
+
+This example shows Claude Code taking over after Codex left an unfinalized
+Active Record.
+
+The previous Active Record looked like this before takeover:
+
+```text
+Status: active
+Agent: Codex
+Current Task: Fix reranker score normalization.
+Next Step If Interrupted: Preserve original input order for equal combined scores.
+```
+
+Claude Code did not overwrite that record. It first preserved Codex's work as
+the newest Finalized Record with `Status: interrupted`, then created the current
+Active Record below with `Status: inherited`.
+
+The next AI can continue from this file without asking the user to repeat what
+happened.
 
 ---
 
