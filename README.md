@@ -83,16 +83,12 @@ templates/PROJECT_BRIEF_TEMPLATE.md
 templates/HANDOFF_TEMPLATE.md
 ```
 
-Then tell the AI coding agent:
-
-```text
-Before editing, read .ai-handoff/PROJECT_BRIEF.md.
-Then read .ai-handoff/HANDOFF.md.
-Maintain the Active Record while working.
-Finalize the Active Record before stopping or handing off.
-```
-
 Then start Codex or Claude Code from the repository root.
+
+The startup files instruct the agent to read:
+
+1. `.ai-handoff/PROJECT_BRIEF.md`
+2. `.ai-handoff/HANDOFF.md`
 
 ## Files
 

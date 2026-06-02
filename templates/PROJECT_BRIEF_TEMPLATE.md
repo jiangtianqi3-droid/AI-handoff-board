@@ -1,90 +1,55 @@
 # AI Project Brief
 
 This file is for AI coding agents.
-It describes the stable project intent, long-term direction, and boundaries.
-It is not a changelog, not a README, and not a file map.
+It describes stable project intent, long-term direction, and boundaries.
+It is not a changelog, README, task list, or file map.
 
 ---
 
-## 1. Project Purpose
+## Purpose
 
 Describe why this project exists.
 
----
+## Long-Term Goal
 
-## 2. Long-Term Goal
+Describe the long-term goal.
 
-Describe the long-term goal of the project.
+## Direction
 
----
-
-## 3. Current Direction
-
-Describe the current design direction.
-
----
-
-## 4. Target Users
-
-Describe who this project is for.
-
----
-
-## 5. Core Design Principles
-
-- Keep the protocol lightweight.
-- Prefer repository-local files.
-- Avoid relying on conversation history.
-- Separate long-term project intent from short-term handoff logs.
+- Describe the current design direction.
+- Prefer stable, repository-local context.
 - Keep AI-readable files short and stable.
-- Do not turn this into an infinite logging system.
+- Avoid unnecessary frameworks, services, or dependencies.
 
----
+## Users
 
-## 6. Non-Goals
+- Describe the main users.
+- Describe any AI agents expected to read this file.
 
-- This is not a task manager.
-- This is not a project management dashboard.
-- This is not a replacement for README.md.
-- This is not a replacement for Git history.
-- This should not store secrets or private data.
-- This should not require a database or server.
+## Boundaries
 
----
+- Not a task manager.
+- Not a dashboard.
+- Not a changelog.
+- Not a replacement for README.md.
+- Not a replacement for Git history.
+- Not a place for secrets or private data.
 
-## 7. Major Constraints
+## Constraints
 
-- Must work across Codex and Claude Code.
-- Must work across multiple devices through Git.
-- Must keep HANDOFF.md bounded.
-- Must not require the user to manually remind the AI to read context.
-- Must not depend on large generated summaries every session.
+- Describe hard compatibility requirements.
+- Describe device, Git, or context-size constraints.
+- Keep short-term handoff state bounded.
 
----
+## Update Policy
 
-## 8. Update Policy
+Only update this file when long-term purpose, design direction, target users, or major constraints change.
 
-Only update this file when the project's long-term purpose, design direction,
-target users, or major constraints change.
+Do not update it for normal bug fixes, small refactors, README edits, template edits, example edits, ordinary feature work, or one-off experiments.
 
-Do not update this file for:
+If uncertain, update `HANDOFF.md` instead.
 
-- normal bug fixes
-- small refactors
-- dependency updates
-- README edits
-- template edits
-- example edits
-- ordinary feature work
-- one-off experiments
-
-If uncertain, update HANDOFF.md instead.
-
----
-
-## 9. Last Major Direction Change
+## Last Major Direction Change
 
 - Date:
-- Changed by:
 - Reason:
-- Summary:
